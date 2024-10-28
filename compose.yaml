@@ -84,8 +84,6 @@ services:
       PASSWORD_notes: ${POSTGRES_PASSWORD}
       PORT_notes: 5432
       ENGINE_notes: postgres@dbgate-plugin-postgres
-
-      WEB_ROOT: "/db"
     volumes:
       - dbgate:/root/.dbgate
 
