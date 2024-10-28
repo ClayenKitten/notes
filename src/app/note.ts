@@ -3,6 +3,11 @@ import { setup } from "./setup";
 
 export const notes = new Elysia()
     .use(setup)
+    .guard({
+        headers: t.Object({
+            Authorization: t.String()
+        })
+    })
     .resolve(({ user, error }) => {
         if (!user) return error(401, "Unauthorized");
         return { user };
