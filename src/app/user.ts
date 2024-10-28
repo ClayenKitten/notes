@@ -30,7 +30,7 @@ export const user = (config: {
                         .where("telegram", "=", body.login)
                         .executeTakeFirst();
                     if (!user) return error(401, "Unauthorized");
-                    return user.token;
+                    return { token: user.token };
 
                     // notes_token.value = user!.token;
                     // notes_token.httpOnly = true;
