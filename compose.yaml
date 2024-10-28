@@ -1,0 +1,96 @@
+services:
+  # Reverse proxy
+  gateway:
+    image: caddy:2.8-alpine
+    ports: [80:80, 443:443]
+    cap_add: [NET_ADMIN]
+    restart: unless-stopped
+    env_file: [.env]
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+  # Primary web service
+  web:
+    image: ghcr.io/clayenkitten/notes:${DEPLOY_TAG}
+    build: .
+    init: true
+    expose: [3000]
+    restart: unless-stopped
+    env_file: [.env]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "--no-progress-meter",
+          "--fail",
+          "http://localhost:3000/healthz"
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_interval: 5s
+      start_period: 15s
+    depends_on:
+      db:
+        condition: service_healthy
+      init-db:
+        condition: service_completed_successfully
+
+  # Primary PostgreSQL database
+  db:
+    image: postgres:16
+    expose: [5432]
+    shm_size: 128mb
+    restart: unless-stopped
+    env_file: [.env]
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "$POSTGRES_USER", "-d", "$POSTGRES_DB"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_interval: 5s
+      start_period: 15s
+
+  # Database migrations
+  init-db:
+    build:
+      context: .
+      dockerfile: ./init-db.Dockerfile
+    env_file: [.env]
+    depends_on:
+      db:
+        condition: service_healthy
+
+  # Web interface for PostgreSQL database
+  dbgate:
+    image: dbgate/dbgate:5.3.1-alpine
+    expose: [3000]
+    restart: unless-stopped
+    env_file: [.env]
+    environment:
+      CONNECTIONS: notes
+      SIGNLE_CONNECTION: notes
+      SINGLE_DATABASE: ${POSTGRES_DB}
+
+      LABEL_notes: ${POSTGRES_DB}
+      SERVER_notes: db
+      DATABASE_notes: ${POSTGRES_DB}
+      USER_notes: ${POSTGRES_USER}
+      PASSWORD_notes: ${POSTGRES_PASSWORD}
+      PORT_notes: 5432
+      ENGINE_notes: postgres@dbgate-plugin-postgres
+
+      WEB_ROOT: "/db"
+    volumes:
+      - dbgate:/root/.dbgate
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db:
+  dbgate:

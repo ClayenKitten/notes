@@ -1,0 +1,21 @@
+{
+    "dockerComposeFile": ["./compose.yaml"],
+    "workspaceFolder": "/app",
+    "service": "web",
+    "runServices": ["gateway", "db", "dbgate"],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "matthewpi.caddyfile-support",
+                "svelte.svelte-vscode",
+                "esbenp.prettier-vscode",
+                "vitest.explorer",
+                "github.vscode-github-actions"
+            ],
+            "settings": {
+                "remote.autoForwardPorts": false
+            }
+        }
+    },
+    "forwardPorts": ["gateway:3000"]
+}

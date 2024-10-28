@@ -1,15 +1,31 @@
 {
-  "name": "notes-backend",
-  "version": "1.0.50",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "bun run --watch src/index.ts"
-  },
-  "dependencies": {
-    "elysia": "latest"
-  },
-  "devDependencies": {
-    "bun-types": "latest"
-  },
-  "module": "src/index.js"
+    "name": "notes",
+    "version": "0.1.0",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "bun build src/index.ts --target bun --outdir ./dist",
+        "start": "NODE_ENV=production bun dist/index.js",
+        "dev": "bun run --watch src/index.ts",
+        "format": "prettier --write .",
+        "check": "tsc --noEmit",
+        "db": "kysely",
+        "db:infer": "kysely-codegen --url postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db/$POSTGRES_DB --dialect postgres --out-file /app/src/db.types.ts"
+    },
+    "dependencies": {
+        "@elysiajs/cors": "^1.1.1",
+        "@elysiajs/swagger": "^1.1.5",
+        "@types/pg": "^8.11.10",
+        "elysia": "latest",
+        "kysely": "^0.27.4",
+        "pg": "^8.13.1",
+        "telegraf": "^4.16.3",
+        "typescript": "^5.6.3"
+    },
+    "devDependencies": {
+        "bun-types": "latest",
+        "kysely-codegen": "^0.17.0",
+        "kysely-ctl": "^0.9.0",
+        "prettier": "^3.3.3"
+    },
+    "module": "src/index.js"
 }

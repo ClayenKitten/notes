@@ -1,0 +1,14 @@
+{
+	http_port 3000
+}
+
+http://{$DOMAIN} {
+	redir /db /db/
+	handle /db/* {
+		reverse_proxy dbgate:3000
+	}
+
+	handle {
+		reverse_proxy web:3000
+	}
+}

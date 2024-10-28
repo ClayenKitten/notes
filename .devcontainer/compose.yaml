@@ -1,0 +1,35 @@
+services:
+  gateway:
+    extends:
+      service: gateway
+      file: ../compose.yaml
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+    environment:
+      DOMAIN: "localhost"
+
+  web:
+    build:
+      context: ..
+      dockerfile: ./.devcontainer/Dockerfile
+    expose: [3000]
+    env_file: [../.env]
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    volumes:
+      - ..:/app:cached
+
+  db:
+    extends:
+      service: db
+      file: ../compose.yaml
+
+  dbgate:
+    extends:
+      service: dbgate
+      file: ../compose.yaml
+
+volumes:
+  caddy_data:
+  caddy_config:
+  db:
+  dbgate:
