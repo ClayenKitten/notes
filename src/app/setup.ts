@@ -3,14 +3,14 @@ import createDatabase from "../db";
 
 export const setup = new Elysia({ name: "setup" })
     .decorate("db", await createDatabase())
-    .resolve({ as: "scoped" }, async ({ cookie: { notes_token }, db }) => {
-        if (!notes_token.value) {
+    .resolve({ as: "scoped" }, async ({ headers, db }) => {
+        if (!headers["Authorization"]) {
             return { user: null };
         }
         let user = await db
             .selectFrom("user")
             .selectAll()
-            .where("token", "=", notes_token.value)
+            .where("token", "=", headers["Authorization"])
             .executeTakeFirst();
         if (!user) {
             return { user: null };

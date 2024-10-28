@@ -16,7 +16,7 @@ export const user = (config: {
         )
         .post(
             "/login",
-            async ({ db, cookie: { notes_token }, body, error }) => {
+            async ({ db, body, error }) => {
                 let allow: boolean;
                 try {
                     allow = await config.oauth(body.login);
@@ -29,12 +29,14 @@ export const user = (config: {
                         .select("token")
                         .where("telegram", "=", body.login)
                         .executeTakeFirst();
+                    if (!user) return error(401, "Unauthorized");
+                    return user.token;
 
-                    notes_token.value = user!.token;
-                    notes_token.httpOnly = true;
-                    notes_token.secure = true;
-                    notes_token.sameSite = "none";
-                    notes_token.maxAge = 24 * 60 * 60;
+                    // notes_token.value = user!.token;
+                    // notes_token.httpOnly = true;
+                    // notes_token.secure = true;
+                    // notes_token.sameSite = "none";
+                    // notes_token.maxAge = 24 * 60 * 60;
                 } else {
                     return error(401, "Unauthorized");
                 }
