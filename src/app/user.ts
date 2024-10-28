@@ -32,6 +32,9 @@ export const user = (config: {
 
                     notes_token.value = user!.token;
                     notes_token.httpOnly = true;
+                    notes_token.secure = true;
+                    notes_token.sameSite = "none";
+                    notes_token.maxAge = 24 * 60 * 60;
                 } else {
                     return error(401, "Unauthorized");
                 }
