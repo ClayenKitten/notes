@@ -12,7 +12,13 @@ export const user = (config: {
                 if (!user) return error(401, "Unauthorized");
                 return user.telegram;
             },
-            { tags: ["user"] }
+            {
+                detail: {
+                    description:
+                        "Получить Telegram username текущего пользователя",
+                    tags: ["user"]
+                }
+            }
         )
         .post(
             "/login",
@@ -31,12 +37,6 @@ export const user = (config: {
                         .executeTakeFirst();
                     if (!user) return error(401, "Unauthorized");
                     return { token: user.token };
-
-                    // notes_token.value = user!.token;
-                    // notes_token.httpOnly = true;
-                    // notes_token.secure = true;
-                    // notes_token.sameSite = "none";
-                    // notes_token.maxAge = 24 * 60 * 60;
                 } else {
                     return error(401, "Unauthorized");
                 }
@@ -45,15 +45,12 @@ export const user = (config: {
                 body: t.Object({
                     login: t.String()
                 }),
-                detail: { description: "Logout user", tags: ["user"] }
-            }
-        )
-        .post(
-            "/logout",
-            ({ cookie: { notes_token } }) => {
-                notes_token.remove();
-            },
-            {
-                detail: { description: "Logout user", tags: ["user"] }
+                detail: {
+                    description: [
+                        "Авторизовать пользователя по Telegram username.",
+                        "Пользователь должен сначала зарегистрироваться через бота."
+                    ].join(" "),
+                    tags: ["user"]
+                }
             }
         );
