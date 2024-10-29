@@ -42,6 +42,10 @@ export default async function createApp({
             })
         )
         .use(setup)
+        .get("/", ({ set }) => {
+            set.headers["content-type"] = "text/html; charset=utf-8";
+            return `Привет! Открой путь <a href="/swagger">/swagger</a>, чтобы увидеть документацию по использованию API.<br/><br/><img src="https://http.cat/images/200.jpg" height=400 />`;
+        })
         .group("user", app => app.use(user({ oauth })))
         .group("note", app => app.use(notes))
         .get(
