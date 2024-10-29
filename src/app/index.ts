@@ -30,7 +30,6 @@ export default async function createApp({
                         { name: "note", description: "Управление записками" },
                         { name: "misc", description: "Прочее" }
                     ],
-                    security: [{ bearerAuth: [] }],
                     components: {
                         securitySchemes: {
                             bearerAuth: {

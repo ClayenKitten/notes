@@ -1,6 +1,6 @@
 {
     "name": "notes",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "bun build src/index.ts --target bun --outdir ./dist",
