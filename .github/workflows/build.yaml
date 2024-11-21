@@ -1,0 +1,57 @@
+name: Build
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  images:
+    name: Build and push images
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        targets:
+          - { name: notes, context: ., containerfile: "Dockerfile" }
+          - {
+              name: notes/init-db,
+              context: .,
+              containerfile: "init-db.Dockerfile"
+            }
+
+    steps:
+      - name: Checkout repository contents
+        uses: actions/checkout@v4
+
+      - name: Generate image metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.targets.name }}
+          flavor: |
+          tags: |
+            type=schedule
+            type=ref,event=branch
+            type=ref,event=tag
+            type=ref,event=pr
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build image
+        id: build_image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          image: ${{ matrix.targets.name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          context: ${{ matrix.targets.context }}
+          containerfiles: ${{ matrix.targets.containerfile || format('{0}/Dockerfile', matrix.targets.context ) }}
+          layers: true
+
+      - name: Push to GHCR
+        uses: redhat-actions/push-to-registry@v2
+        id: push
+        with:
+          tags: ${{ steps.build_image.outputs.tags }}
+          username: ${{ github.actor }}
+          password: ${{ github.token }}

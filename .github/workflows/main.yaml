@@ -1,0 +1,16 @@
+name: Pipeline
+permissions: write-all
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  check:
+    name: Check
+    uses: ./.github/workflows/check.yaml
+
+  build:
+    name: Build
+    needs: check
+    uses: ./.github/workflows/build.yaml

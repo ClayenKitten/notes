@@ -8,6 +8,7 @@
         "dev": "bun run --watch src/index.ts",
         "format": "prettier --write .",
         "check": "tsc --noEmit",
+        "check:format": "prettier . --check",
         "db": "kysely",
         "db:infer": "kysely-codegen --url postgres://$POSTGRES_USER:$POSTGRES_PASSWORD@db/$POSTGRES_DB --dialect postgres --out-file /app/src/db.types.ts"
     },
